@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using HarmonyLib;
-using KSPCommunityFixes.BugFixes;
-using KSPCommunityFixes.UI;
-using Smooth.Collections;
 using UnityEngine;
 
 namespace KSPCommunityFixes
@@ -48,10 +44,12 @@ namespace KSPCommunityFixes
 
             // QoL :
             BasePatch.Patch<PAWCollapsedInventories>();
+            BasePatch.Patch<AutomaticCargoPartVolume>();
 
             // Bugfixes :
             BasePatch.Patch<RefundingOnRecovery>();
             BasePatch.Patch<DockingPortDrift>();
+            BasePatch.Patch<AllowNestedEmptyInventoryPart>();
 
             // UI :
             BasePatch.Patch<AltimeterHorizontalPosition>();

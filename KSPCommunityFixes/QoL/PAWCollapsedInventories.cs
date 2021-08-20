@@ -7,9 +7,8 @@ using HarmonyLib;
 using KSP.Localization;
 using TMPro;
 
-namespace KSPCommunityFixes.UI
+namespace KSPCommunityFixes
 {
-    
     class PAWCollapsedInventories : BasePatch
     {
         private static StringBuilder sb = new StringBuilder();

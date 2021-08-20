@@ -57,10 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasePatch.cs" />
+    <Compile Include="Modding fixes\AllowNestedEmptyInventoryPart.cs" />
     <Compile Include="BugFixes\DockingPortDrift.cs" />
     <Compile Include="BugFixes\RefundingOnRecovery.cs" />
     <Compile Include="KSPCommunityFixes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Modding fixes\AutomaticCargoPartVolume.cs" />
     <Compile Include="QoL\PAWCollapsedInventories.cs" />
     <Compile Include="QoL\AltimeterHorizontalPosition.cs" />
   </ItemGroup>

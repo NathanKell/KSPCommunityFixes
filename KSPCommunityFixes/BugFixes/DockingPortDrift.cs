@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using HarmonyLib;
 
-namespace KSPCommunityFixes.BugFixes
+namespace KSPCommunityFixes
 {
     class DockingPortDrift : BasePatch
     {

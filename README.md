@@ -24,7 +24,7 @@ Individual patches can be enabled or disabled by editing the `Settings.cfg` file
 
 #### Bugfixes
 
-- **RefundingOnRecovery** : Vessel recovery funds properly account for modules implementing IPartCostModifier. This bug affect stock fairings, cargo parts and many modules from various mods (part switchers and procedural parts mods, USI, Kerbalism, Tweakscale, etc).\
+- **RefundingOnRecovery** : Vessel recovery funds properly account for modules implementing `IPartCostModifier`. This bug affect stock fairings, cargo parts and many modules from various mods (part switchers and procedural parts mods, USI, Kerbalism, Tweakscale, etc).\
 This is the same issue that is also fixed by [KSP-Recall](https://forum.kerbalspaceprogram.com/index.php?/topic/192048-18/), but by patching the actual stock bug instead of doing a huge hack with hidden resources. If KSP-Recall is installed, the fix from KSPCommunityFixes will by used instead of the KSP-Recall one.
 - **DockingPortDrift** : Prevent persistent position drift of docking port connections, as long as the "Rotation locked" advanced tweakables PAW option is enabled (it is by default). Credit to [JPLRepo for the fix](https://forum.kerbalspaceprogram.com/index.php?/topic/204248-*).
 
@@ -34,6 +34,11 @@ This is the same issue that is also fixed by [KSP-Recall](https://forum.kerbalsp
 ![](https://github.com/KSPModdingLibs/KSPCommunityFixes/raw/master/Screenshots/PAWCollapsedInventories.gif)
 - **AltimeterHorizontalPosition** : Altimeter widget horizontal position is now tweakable in the pause menu settings.\
 ![](https://github.com/KSPModdingLibs/KSPCommunityFixes/raw/master/Screenshots/AltimeterHorizontalPosition.gif)
+
+#### Modding fixes
+
+- **AllowNestedEmptyInventoryPart** : Remove the hardcoded "cargo parts can't have an inventory" limitation. Instead, the player will be prompted to empty the part inventory before he can put that part inside another part inventory.
+- **AutomaticCargoPartVolume** : Parts that have a `ModuleCargoPart` with no `packedVolume` field defined in their config will have their volume auto-computed at the prefab compilation. The volume is computed from the part prefab aggregated colliders bounds, without any special handling of deployable / resizeable / mesh switcheable parts.
 
 ### License
 
