@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 
 namespace KSPCommunityFixes
 {
-    class AllowNestedEmptyInventoryPart : BasePatch
+    class AllowNestedInventoryPart : BasePatch
     {
+        private static FieldInfo UIPartActionInventorySlot_moduleInventoryPart;
+
         protected override void ApplyPatches(ref List<PatchInfo> patches)
         {
+            UIPartActionInventorySlot_moduleInventoryPart = AccessTools.Field(typeof(UIPartActionInventorySlot), "moduleInventoryPart");
+
             patches.Add(new PatchInfo(
                 PatchMethodType.Prefix,
                 AccessTools.Method(typeof(Part), nameof(Part.AddModule), new[] { typeof(string), typeof(bool) }),
@@ -30,6 +35,18 @@ namespace KSPCommunityFixes
                 GetType()));
         }
 
+        protected override bool CanApplyPatch(out string reason)
+        {
+            if (!KSPCommunityFixes.enabledPatches.Contains(nameof(BetterCargoPartVolume)))
+            {
+                reason = "dependant on the BetterCargoPartVolume patch, which is disabled";
+                return false;
+            }
+
+            return base.CanApplyPatch(out reason);
+        }
+
+        // remove the hardcoded checks that prevent having a ModuleCargoPart and a ModuleInventoryPart on the same part
         static bool Part_AddModule_Prefix(Part __instance, string moduleName, bool forceAwake, ref PartModule __result)
         {
             Type classByName = AssemblyLoader.GetClassByName(typeof(PartModule), moduleName);
@@ -56,39 +73,47 @@ namespace KSPCommunityFixes
             return false;
         }
 
+        // Make sure inventory parts can't be stacked
         static void ModuleInventoryPart_CanStackInSlot_Postfix(AvailablePart part, ref bool __result)
         {
             if (!__result)
                 return;
 
-            if (!CanBeStored(part.partPrefab))
+            if (part.partPrefab.HasModuleImplementing<ModuleInventoryPart>())
             {
                 __result = false;
             }
         }
 
-        static bool UIPartActionInventorySlot_ProcessClickWithHeldPart_Prefix()
+        static bool UIPartActionInventorySlot_ProcessClickWithHeldPart_Prefix(UIPartActionInventorySlot __instance)
         {
-            return CanBeStored(UIPartActionControllerInventory.Instance.CurrentCargoPart);
+            Part inventoryPart = null;
+            if (UIPartActionInventorySlot_moduleInventoryPart.GetValue(__instance) is ModuleInventoryPart inventoryModule)
+            {
+                inventoryPart = inventoryModule.part;
+            }
+
+            return CanBeStored(UIPartActionControllerInventory.Instance.CurrentCargoPart, inventoryPart);
         }
 
-        static bool UIPartActionInventorySlot_StorePartInEmptySlot_Prefix(Part partToStore)
+        static bool UIPartActionInventorySlot_StorePartInEmptySlot_Prefix(UIPartActionInventorySlot __instance, Part partToStore)
         {
-            return CanBeStored(partToStore);
+            Part inventoryPart = null;
+            if (UIPartActionInventorySlot_moduleInventoryPart.GetValue(__instance) is ModuleInventoryPart inventoryModule)
+            {
+                inventoryPart = inventoryModule.part;
+            }
+
+            return CanBeStored(partToStore, inventoryPart);
         }
 
-		private static bool CanBeStored(Part part)
+		private static bool CanBeStored(Part cargoPart, Part inventoryPart = null)
 		{
-			ModuleInventoryPart inventory = part.FindModuleImplementing<ModuleInventoryPart>();
+            // Prevent inventory parts to be stored in themselves
+            if (inventoryPart != null && cargoPart == inventoryPart)
+                return false;
 
-			if (inventory == null || inventory.InventoryIsEmpty)
-				return true;
-
-			ScreenMessages.PostScreenMessage($"Can't store {part.partInfo.title}\nIts inventory must be emptied first.", 5f, ScreenMessageStyle.UPPER_CENTER);
-
-			return false;
-		}
-
-
-	}
+            return true;
+        }
+    }
 }

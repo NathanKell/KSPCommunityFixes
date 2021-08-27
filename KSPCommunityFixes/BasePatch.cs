@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
 
@@ -16,21 +13,29 @@ namespace KSPCommunityFixes
         private static readonly Version versionMinDefault = new Version(1, 12, 0);
         private static readonly Version versionMaxDefault = new Version(1, 12, 99);
 
-        public static void Patch<T>(bool checkConfigEnabled = true) where T : BasePatch
+        public static void Patch<T>() where T : BasePatch
         {
             Type patchType = typeof(T);
 
-            if (checkConfigEnabled && !KSPCommunityFixes.enabledPatches.Contains(patchType.Name))
+            T patch = (T)Activator.CreateInstance(patchType);
+
+            if (!patch.CanApplyPatch(out string reason))
+            {
+                Debug.Log($"[KSPCommunityFixes] Patch {patchType.Name} not applied ({reason})");
+                KSPCommunityFixes.enabledPatches.Remove(patchType.Name);
+                return;
+            }
+
+            if (!KSPCommunityFixes.enabledPatches.Contains(patchType.Name))
             {
                 Debug.Log($"[KSPCommunityFixes] Patch {patchType.Name} not applied (disabled in Settings.cfg)");
                 return;
             }
 
-            T patch = (T)Activator.CreateInstance(patchType);
-
             if (!patch.IsVersionValid)
             {
                 Debug.Log($"[KSPCommunityFixes] Patch {patchType.Name} isn't applicable to this KSP version.");
+                KSPCommunityFixes.enabledPatches.Remove(patchType.Name);
                 return;
             }
 
@@ -42,6 +47,7 @@ namespace KSPCommunityFixes
             catch (Exception e)
             {
                 Debug.LogError($"[KSPCommunityFixes] Patch {patchType.Name} not applied : {e}");
+                KSPCommunityFixes.enabledPatches.Remove(patchType.Name);
                 return;
             }
 
@@ -112,6 +118,12 @@ namespace KSPCommunityFixes
             {
                 OnLoadData(node.nodes[0]);
             }
+        }
+
+        protected virtual bool CanApplyPatch(out string reason)
+        {
+            reason = null;
+            return true;
         }
 
         protected virtual void OnLoadData(ConfigNode node) { }

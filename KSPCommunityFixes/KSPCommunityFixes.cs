@@ -36,20 +36,22 @@ namespace KSPCommunityFixes
 
             foreach (ConfigNode.Value value in cfg.values)
             {
-                if (!Boolean.TryParse(value.value, out bool patchEnabled) || patchEnabled)
+                if (!bool.TryParse(value.value, out bool patchEnabled) || patchEnabled)
                 {
                     enabledPatches.Add(value.name);
                 }
             }
 
-            // QoL :
-            BasePatch.Patch<PAWCollapsedInventories>();
-            BasePatch.Patch<AutomaticCargoPartVolume>();
-
             // Bugfixes :
             BasePatch.Patch<RefundingOnRecovery>();
             BasePatch.Patch<DockingPortDrift>();
-            BasePatch.Patch<AllowNestedEmptyInventoryPart>();
+
+            // Modding :
+            BasePatch.Patch<BetterCargoPartVolume>();
+            BasePatch.Patch<AllowNestedInventoryPart>(); // this is dependant on the BetterCargoPartVolume patch, must be called after it
+
+            // QoL :
+            BasePatch.Patch<PAWCollapsedInventories>();
 
             // UI :
             BasePatch.Patch<AltimeterHorizontalPosition>();

@@ -1,0 +1,38 @@
+// Make all parts storable in inventories.
+// This is only applied to parts that don't already have a configured "packedVolume"
+
+// Edit all non-storable (ie, only manipulable in EVA) cargo parts so they can be stored
+// Their packedVolume will be auto-generated
+@PART[*]:HAS[@MODULE[ModuleCargoPart]:HAS[#packedVolume[-1]]]:FOR[ZZZ_EverythingIsCargo]
+{
+  @MODULE[ModuleCargoPart]
+  {
+    !packedVolume = delete
+  }
+}
+
+// Use variable volume for stock parts that implement ModulePartVariants mesh switching
+@PART[Tube1|Tube1p5|Tube2|Tube3|Tube4]:HAS[@MODULE[ModuleCargoPart]]:FOR[ZZZ_EverythingIsCargo]
+{
+  @MODULE[ModuleCargoPart]
+  {
+    !packedVolume = delete
+  }
+}
+
+// Add a ModuleCargoPart with an auto-generated packedVolume to all parts that don't already have one, excepted :
+// - Flags
+// - Comets/Asteroids
+@PART[*]:HAS[!MODULE[ModuleCargoPart],!MODULE[FlagSite],!MODULE[ModuleComet],!MODULE[ModuleAsteroid]]:FOR[ZZZ_EverythingIsCargo]
+{
+  MODULE
+  {
+    name = ModuleCargoPart
+  }
+}
+
+// Ensure kerbals don't have a ModuleCargoPart
+@PART[kerbalEVA*]:HAS[@MODULE[ModuleCargoPart]]:FINAL
+{
+  !MODULE[ModuleCargoPart],* {}
+]

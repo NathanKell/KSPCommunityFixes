@@ -35,10 +35,10 @@ This is the same issue that is also fixed by [KSP-Recall](https://forum.kerbalsp
 - **AltimeterHorizontalPosition** : Altimeter widget horizontal position is now tweakable in the pause menu settings.\
 ![](https://github.com/KSPModdingLibs/KSPCommunityFixes/raw/master/Screenshots/AltimeterHorizontalPosition.gif)
 
-#### Modding fixes
+#### Modding/Feature fixes
 
-- **AllowNestedEmptyInventoryPart** : Remove the hardcoded "cargo parts can't have an inventory" limitation. Instead, the player will be prompted to empty the part inventory before he can put that part inside another part inventory.
-- **AutomaticCargoPartVolume** : Parts that have a `ModuleCargoPart` with no `packedVolume` field defined in their config will have their volume auto-computed at the prefab compilation. The volume is computed from the part prefab aggregated colliders bounds, without any special handling of deployable / resizeable / mesh switcheable parts.
+- **BetterCargoPartVolume** : Parts that have a ModuleCargoPart with no "packedVolume" field defined in their config will have their volume auto-computed from the part bounds at prefab compilation. This also handle multiple volume per part when using the ModulePartVariants mesh-switching feature, and provide a C# interface for mesh-switcher mods to handle volume switching. See [documentation](https://github.com/KSPModdingLibs/KSPCommunityFixes/wiki/BetterCargoPartVolume) for details.
+- **AllowNestedInventoryPart** : Remove the "inventory parts can't be cargo parts" stock limitation. Require the BetterCargoPartVolume patch to be enabled.
 
 ### License
 
