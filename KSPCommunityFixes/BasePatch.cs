@@ -66,14 +66,18 @@ namespace KSPCommunityFixes
         protected struct PatchInfo
         {
             public PatchMethodType patchMethodType;
-            public MethodInfo originalMethod;
+            public MethodBase originalMethod;
             public MethodInfo patchMethod;
 
-            public PatchInfo(PatchMethodType patchMethodType, MethodInfo originalMethod, Type patchType)
+            public PatchInfo(PatchMethodType patchMethodType, MethodBase originalMethod, Type patchType, string originalMethodNameInPatchMethod = null)
             {
                 this.patchMethodType = patchMethodType;
                 this.originalMethod = originalMethod;
-                string patchMethodName = originalMethod.DeclaringType.Name + "_" + originalMethod.Name + "_" + patchMethodType;
+
+                if (originalMethodNameInPatchMethod == null)
+                    originalMethodNameInPatchMethod = originalMethod.Name;
+
+                string patchMethodName = originalMethod.DeclaringType.Name + "_" + originalMethodNameInPatchMethod + "_" + patchMethodType;
                 patchMethod = AccessTools.Method(patchType, patchMethodName);
             }
         }

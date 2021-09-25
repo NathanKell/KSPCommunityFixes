@@ -82,11 +82,6 @@ namespace KSPCommunityFixes
 
             patches.Add(new PatchInfo(
                 PatchMethodType.Prefix,
-                AccessTools.Method(typeof(ModuleCargoPart), nameof(ModuleCargoPart.OnStart)),
-                GetType()));
-
-            patches.Add(new PatchInfo(
-                PatchMethodType.Prefix,
                 AccessTools.Method(typeof(ModuleInventoryPart), "PartDroppedOnInventory"),
                 GetType()));
 
@@ -129,6 +124,11 @@ namespace KSPCommunityFixes
                 }),
                 GetType()));
 
+            // Make ModuleCargoPart.packedVolume persistent
+            Lib.EditPartModuleKSPFieldAttributes(
+                typeof(ModuleCargoPart),
+                nameof(ModuleCargoPart.packedVolume),
+                kspField => kspField.isPersistant = true);
         }
 
         protected override void OnLoadData(ConfigNode node)
@@ -472,11 +472,6 @@ namespace KSPCommunityFixes
             }
 
             return sb.ToStringAndRelease();
-        }
-
-        private static void ModuleCargoPart_OnStart_Prefix(ModuleCargoPart __instance)
-        {
-            __instance.Fields[nameof(ModuleCargoPart.packedVolume)].isPersistant = true;
         }
 
         private static void UpdateDynamicPackedVolume(ModuleCargoPart cargoModule)
