@@ -63,12 +63,15 @@ namespace KSPCommunityFixes
             public MethodInfo originalMethod;
             public MethodInfo patchMethod;
 
-            public PatchInfo(PatchMethodType patchMethodType, MethodInfo originalMethod, Type patchType)
+            public PatchInfo(PatchMethodType patchMethodType, MethodInfo originalMethod, Type patchType, string customPatchName = null)
             {
                 this.patchMethodType = patchMethodType;
                 this.originalMethod = originalMethod;
-                string patchMethodName = originalMethod.DeclaringType.Name + "_" + originalMethod.Name + "_" + patchMethodType;
-                patchMethod = AccessTools.Method(patchType, patchMethodName);
+
+                if (customPatchName == null)
+                    customPatchName = originalMethod.DeclaringType.Name + "_" + originalMethod.Name + "_" + patchMethodType;
+
+                patchMethod = AccessTools.Method(patchType, customPatchName);
             }
         }
 
